@@ -36,9 +36,8 @@
 #define SDCARD_MOSI  (23)
 #define SDCARD_MISO  (19)
 #define SDCARD_SCLK  (18)
-// The card is wired to the ESP32 VSPI defaults (SCLK=18, MISO=19, MOSI=23,
-// CS=5), which are the pins the Arduino core configures the SPI2 host with
-// before setup() runs, so the card can mount on that existing bus.
+// Fallback for boards where the Arduino core has already brought up the SPI2
+// host before setup() runs: mount on that bus instead of giving up.
 #define SDCARD_USE_EXISTING_SPI_BUS
 
 // 64x32 RGB LED matrix driven by SmartMatrix / I2S DMA

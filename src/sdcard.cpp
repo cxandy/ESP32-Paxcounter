@@ -105,16 +105,14 @@ bool sdcard_init(bool create) {
   sdspi_device_config_t slot_config = SDSPI_DEVICE_CONFIG_DEFAULT();
   slot_config.gpio_cs = (gpio_num_t)SDCARD_CS;
 
-  // On ESP32 the Arduino core brings up the SPI2 host while its global SPIClass
-  // objects get constructed, so spi_bus_initialize() reports the bus as already
-  // initialised before setup() ever runs. Forcing it away from the owner crashes
-  // the driver, and SPI3_HOST is not a usable master here either. Boards that
-  // declare the card is wired to those default VSPI pins can therefore just
-  // mount on the bus that is already there.
-  ret = spi_bus_initialize(SPI_HOST, &bus_cfg, 1);
+  // Initialize the same host the mount helper will use. SDSPI_HOST_DEFAULT()
+  // asks for HSPI_HOST, which is SPI2_HOST on ESP32, while SPI_HOST is SPI1_HOST
+  // - the SPI flash peripheral, which is always busy and therefore made
+  // spi_bus_initialize() fail on every board. Freeing it is not an option either.
+  ret = spi_bus_initialize(HSPI_HOST, &bus_cfg, 1);
   if (ret == ESP_ERR_INVALID_STATE) {
 #ifdef SDCARD_USE_EXISTING_SPI_BUS
-    ESP_LOGW(TAG, "SPI bus already initialized by the Arduino core, reusing it");
+    ESP_LOGW(TAG, "SPI host %d already initialized, reusing it", (int)HSPI_HOST);
     ret = ESP_OK;
 #endif
   }
