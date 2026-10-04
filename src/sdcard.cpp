@@ -105,20 +105,18 @@ bool sdcard_init(bool create) {
   sdspi_device_config_t slot_config = SDSPI_DEVICE_CONFIG_DEFAULT();
   slot_config.gpio_cs = (gpio_num_t)SDCARD_CS;
 
-  // SDSPI_HOST_DEFAULT() asks for HSPI_HOST, which is SPI2_HOST on ESP32. The
-  // Arduino core claims that host while its global SPIClass objects get
-  // constructed, so spi_bus_initialize() fails even though nothing on the board
-  // is driving SPI. IDF documents VSPI_HOST (SPI3_HOST) as an equally valid
-  // choice and the GPIO matrix lets it drive the same pins, so use it instead of
-  // forcing the bus away from its owner - freeing a live bus crashes the driver.
-  spi_host_device_t spi_host = SPI_HOST;
-  ret = spi_bus_initialize(spi_host, &bus_cfg, 1);
-  if (ret == ESP_ERR_INVALID_STATE && SPI_HOST != SPI3_HOST) {
-    ESP_LOGW(TAG, "SPI host %d already claimed, falling back to host %d",
-             (int)spi_host, (int)SPI3_HOST);
-    spi_host = SPI3_HOST;
-    host.slot = spi_host;
-    ret = spi_bus_initialize(spi_host, &bus_cfg, 1);
+  // On ESP32 the Arduino core brings up the SPI2 host while its global SPIClass
+  // objects get constructed, so spi_bus_initialize() reports the bus as already
+  // initialised before setup() ever runs. Forcing it away from the owner crashes
+  // the driver, and SPI3_HOST is not a usable master here either. Boards that
+  // declare the card is wired to those default VSPI pins can therefore just
+  // mount on the bus that is already there.
+  ret = spi_bus_initialize(SPI_HOST, &bus_cfg, 1);
+  if (ret == ESP_ERR_INVALID_STATE) {
+#ifdef SDCARD_USE_EXISTING_SPI_BUS
+    ESP_LOGW(TAG, "SPI bus already initialized by the Arduino core, reusing it");
+    ret = ESP_OK;
+#endif
   }
   if (ret != ESP_OK) {
     ESP_LOGE(TAG, "failed to initialize SPI bus (err %d)", (int)ret);
