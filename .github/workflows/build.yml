@@ -89,6 +89,7 @@ jobs:
             m5core.h,
             m5fire.h,
             olimexpoeiso.h,
+            esp32dev_sd.h,
           ]
     runs-on: ${{ matrix.os }}
 
