@@ -106,8 +106,18 @@ bool sdcard_init(bool create) {
   slot_config.gpio_cs = (gpio_num_t)SDCARD_CS;
 
   ret = spi_bus_initialize(SPI_HOST, &bus_cfg, 1);
+  if (ret == ESP_ERR_INVALID_STATE) {
+    // something on the board already claimed the VSPI bus during boot. Nothing
+    // else on this board drives SPI, so reclaim the bus rather than giving up
+    // on the card. Boards where another peripheral really owns the bus would
+    // fail the spi_bus_free() call and keep the old behaviour.
+    ESP_LOGW(TAG, "SPI bus already in use, reclaiming it for the SD card");
+    if (spi_bus_free(SPI_HOST, false) == ESP_OK)
+      ret = spi_bus_initialize(SPI_HOST, &bus_cfg, 1);
+  }
   if (ret != ESP_OK) {
-    ESP_LOGE(TAG, "failed to initialize SPI bus");
+    ESP_LOGE(TAG, "failed to initialize SPI bus (%s)",
+             ret == ESP_ERR_INVALID_STATE ? "bus busy" : "driver error");
     return false;
   }
 

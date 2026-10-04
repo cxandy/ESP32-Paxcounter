@@ -204,8 +204,10 @@ void setup() {
   }
 #endif // VERBOSE
 
+#ifndef NO_I2C_BUS
   // open i2c bus
   i2c_init();
+#endif
 
 // setup power on boards with power management logic
 #ifdef EXT_POWER_SW
@@ -224,8 +226,10 @@ void setup() {
 #endif
 
   // now that we are powered, we scan i2c bus for devices
+#ifndef NO_I2C_BUS
   if (RTC_runmode == RUNMODE_POWERCYCLE)
     i2c_scan();
+#endif
 
 // initialize display
 #ifdef HAS_DISPLAY

@@ -51,6 +51,10 @@
 #define HAS_LED NOT_A_PIN
 //#define HAS_BUTTON (0)  // BOOT button on GPIO0
 
+// Nothing on this board uses I2C, and the default SDA/SCL pins (GPIO21/GPIO22)
+// would fight the panel: GPIO22 is the E row-address line. Keep the bus closed.
+#define NO_I2C_BUS
+
 // No battery voltage divider on this board, so skip the ADC probe:
 //#define BAT_MEASURE_ADC ADC1_GPIO35_CHANNEL
 //#define BAT_VOLTAGE_DIVIDER 2
