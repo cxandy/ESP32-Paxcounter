@@ -41,7 +41,7 @@
 #define HAS_SMARTMATRIX           1       // SmartMatrix4-ESP32 display output
 #define LED_MATRIX_WIDTH          (64)    // Width (cols) in pixels of the panel
 #define LED_MATRIX_HEIGHT         (32)    // Height (rows) in pixels of the panel
-#define MATRIX_DISPLAY_BRIGHTNESS 60      // panel brightness 0..255
+#define MATRIX_DISPLAY_BRIGHTNESS 30      // panel brightness 0..255
 #define MATRIX_DISPLAY_TREND_LEN  32      // number of bars in the trend graph
 
 //#define BOARD_HAS_PSRAM // WROOM-32 has no PSRAM

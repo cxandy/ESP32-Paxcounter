@@ -112,7 +112,7 @@ bool sdcard_init(bool create) {
     // on the card. Boards where another peripheral really owns the bus would
     // fail the spi_bus_free() call and keep the old behaviour.
     ESP_LOGW(TAG, "SPI bus already in use, reclaiming it for the SD card");
-    if (spi_bus_free(SPI_HOST, false) == ESP_OK)
+    if (spi_bus_free(SPI_HOST) == ESP_OK)
       ret = spi_bus_initialize(SPI_HOST, &bus_cfg, 1);
   }
   if (ret != ESP_OK) {
