@@ -79,6 +79,10 @@ BME_IRQ         <- setBMEIRQ() <- Ticker.h
 // Basic Config
 #include "main.h"
 
+#ifdef HAS_SMARTMATRIX
+#include "smartmatrixdisplay.h"
+#endif
+
 char clientId[20] = {0}; // unique ClientID
 
 void setup() {
@@ -112,6 +116,20 @@ void setup() {
 #else
   // mute logs completely by redirecting them to silence function
   esp_log_level_set("*", ESP_LOG_NONE);
+#endif
+
+// initialize SmartMatrix LED panel (I2S DMA does the refresh, no timer IRQ)
+#ifdef HAS_SMARTMATRIX
+  strcat_P(features, " MTX");
+  sm_display_init();
+  // keep the panel repaint on core 0, core 1 is busy with MAC sniffing
+  xTaskCreatePinnedToCore(sm_display_task,  // task function
+                          "smdisplay",     // name of task
+                          3072,            // stack size of task
+                          (void *)1,       // parameter of the task
+                          1,               // priority of the task
+                          &smDisplayTask,  // task handle
+                          0);              // CPU core
 #endif
 
 // initialize SD interface and mount SD card, if present

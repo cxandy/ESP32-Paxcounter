@@ -52,8 +52,9 @@
 #define DISABLE_BROWNOUT 1 // comment out if you want to keep brownout feature
 
 // on board LED, GPIO2 on most classic ESP32 devkits
-// set to NOT_A_PIN if your board has no (usable) LED
-#define HAS_LED (2)
+// GPIO2 is used as G1 on the HUB75 panel, so the LED is disabled
+//#define HAS_LED (2)
+#define HAS_LED NOT_A_PIN
 //#define HAS_BUTTON (0)  // on board button, boot button on GPIO0
 //#define BUTTON_PULLUP 1
 
