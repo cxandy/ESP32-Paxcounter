@@ -82,6 +82,9 @@ BME_IRQ         <- setBMEIRQ() <- Ticker.h
 #ifdef HAS_SMARTMATRIX
 #include "smartmatrixdisplay.h"
 #endif
+#ifdef HAS_MATRIX_DISPLAY || HAS_SMARTMATRIX
+#include "wificonfig.h"
+#endif
 
 char clientId[20] = {0}; // unique ClientID
 
@@ -310,8 +313,13 @@ void setup() {
 
 #if (BOOTMENU)
   // start local webserver after each coldstart
-  if (RTC_runmode == RUNMODE_POWERCYCLE)
+  if (RTC_runmode == RUNMODE_POWERCYCLE) {
+#ifdef HAS_SMARTMATRIX || HAS_MATRIX_DISPLAY
+    wifi_config_auto_connect(15);
+#else
     start_boot_menu();
+#endif
+  }
 #endif
 
   // start local webserver on rcommand request

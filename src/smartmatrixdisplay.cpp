@@ -14,7 +14,9 @@
 
 #include "globals.h"
 #include "smartmatrixdisplay.h"
-
+#ifdef HAS_SMARTMATRIX || defined(HAS_MATRIX_DISPLAY)
+#include "wificonfig.h"
+#endif
 // SmartMatrix buffer / layer configuration for the 64x32 panel
 #define SM_COLOR_DEPTH    24 // layers store rgb24 directly
 #define SM_REFRESH_DEPTH  36 // 24 / 36 / 48 - higher is smoother but costlier
@@ -138,7 +140,8 @@ void sm_display_refresh(void) {
   // header: label on the left, wifi/ble split on the right
   char header[12];
   smLayer.drawString(0, SM_HEADER_Y, colorDim, "PAX");
-  snprintf(header, sizeof(header), "W%u B%u", count.wifi_count,
+  const char *tstat = wifi_time_status_str();
+  snprintf(header, sizeof(header), "%sW%u B%u", tstat, count.wifi_count,
            count.ble_count);
   drawStringRight(SM_HEADER_Y, header, count.ble_count ? colorBle : colorWifi);
 
