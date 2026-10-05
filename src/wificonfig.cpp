@@ -9,6 +9,7 @@ static bool time_synced = false;
 static bool portal_running = false;
 static WiFiManager *wm = nullptr;
 static TaskHandle_t portal_timeout_task = NULL;
+volatile uint32_t wifi_setup_deadline_ms = 0;
 
 static void portal_timeout_callback(void *parameter) {
   uint32_t timeout = (uint32_t)(uintptr_t)parameter;
@@ -82,8 +83,10 @@ bool wifi_config_auto_connect(uint32_t timeoutSeconds) {
   if (!connected) {
     ESP_LOGI(TAG, "Launching Wi-Fi captive portal with timeout %u seconds", timeoutSeconds);
     portal_running = true;
+    wifi_setup_deadline_ms = millis() + timeoutSeconds * 1000UL;
     connected = wm->autoConnect("Paxcounter-Setup", nullptr);
     portal_running = false;
+    wifi_setup_deadline_ms = 0;
   }
 
   if (portal_timeout_task) {

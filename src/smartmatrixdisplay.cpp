@@ -106,6 +106,22 @@ void sm_display_refresh(void) {
   struct count_payload_t count;
   libpax_counter_count(&count);
 
+  // while the Wi-Fi setup portal is open, show a countdown instead
+  if (wifi_setup_deadline_ms) {
+    int32_t remain = (int32_t)(wifi_setup_deadline_ms - millis());
+    if (remain < 0)
+      remain = 0;
+    uint16_t secs = (uint16_t)(remain / 1000) + 1;
+    const rgb24 colorSetup = rgb24(0, 200, 220);
+    smLayer.fillScreen(rgb24(0, 0, 0));
+    smLayer.drawString(0, SM_HEADER_Y, colorSetup, "WIFI SETUP");
+    char buf[8];
+    snprintf(buf, sizeof(buf), "%us", secs);
+    drawStringRight(SM_HEADER_Y, buf, colorSetup);
+    smLayer.swapBuffers(false);
+    return;
+  }
+
   // a changed count means a new send cycle, so push a trend bar
   if (smFirstSample || (count.pax != smLastPax)) {
     smTrend[smTrendPos] = count.pax;

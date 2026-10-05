@@ -19,6 +19,11 @@ const char *wifi_time_status_str(void);
 
 void wifi_config_stop_portal_if_running(void);
 
+// Set to a non-zero deadline (millis() + seconds*1000) while the setup
+// portal is open. The matrix display task reads it to show a countdown.
+// 0 means "not in setup mode".
+extern volatile uint32_t wifi_setup_deadline_ms;
+
 #ifdef __cplusplus
 }
 #endif
