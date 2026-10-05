@@ -82,7 +82,7 @@ BME_IRQ         <- setBMEIRQ() <- Ticker.h
 #ifdef HAS_SMARTMATRIX
 #include "smartmatrixdisplay.h"
 #endif
-#ifdef HAS_MATRIX_DISPLAY || HAS_SMARTMATRIX
+#if defined(HAS_SMARTMATRIX) || defined(HAS_MATRIX_DISPLAY)
 #include "wificonfig.h"
 #endif
 
@@ -311,7 +311,7 @@ void setup() {
     start_ota_update();
 #endif
 
-#ifdef HAS_SMARTMATRIX || HAS_MATRIX_DISPLAY
+#if defined(HAS_SMARTMATRIX) || defined(HAS_MATRIX_DISPLAY)
   // Try Wi-Fi auto-connect with captive portal fallback
   wifi_config_auto_connect(15);
 #else

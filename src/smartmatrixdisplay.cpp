@@ -14,7 +14,7 @@
 
 #include "globals.h"
 #include "smartmatrixdisplay.h"
-#ifdef HAS_SMARTMATRIX || defined(HAS_MATRIX_DISPLAY)
+#if defined(HAS_SMARTMATRIX) || defined(HAS_MATRIX_DISPLAY)
 #include "wificonfig.h"
 #endif
 // SmartMatrix buffer / layer configuration for the 64x32 panel
