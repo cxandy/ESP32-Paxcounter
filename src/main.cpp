@@ -311,15 +311,15 @@ void setup() {
     start_ota_update();
 #endif
 
+#ifdef HAS_SMARTMATRIX || HAS_MATRIX_DISPLAY
+  // Try Wi-Fi auto-connect with captive portal fallback
+  wifi_config_auto_connect(15);
+#else
 #if (BOOTMENU)
   // start local webserver after each coldstart
-  if (RTC_runmode == RUNMODE_POWERCYCLE) {
-#ifdef HAS_SMARTMATRIX || HAS_MATRIX_DISPLAY
-    wifi_config_auto_connect(15);
-#else
+  if (RTC_runmode == RUNMODE_POWERCYCLE)
     start_boot_menu();
 #endif
-  }
 #endif
 
   // start local webserver on rcommand request
